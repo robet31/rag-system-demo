@@ -16,7 +16,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const ADMIN_EMAILS = ['sopoh006@gmail.com']
+const ADMIN_EMAILS = ['admin@ragdemo.com', 'sinaubersama89@gmail.com', 'sopoh006@gmail.com']
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -41,17 +41,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error }
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      return { error }
+    }
+    if (!data.session) {
+      return { error: new Error('Silakan cek email untuk verifikasi akun Anda') }
+    }
+    return { error: null }
   }
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password })
-    return { error }
+    const { error, data } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    })
+    if (error) {
+      return { error }
+    }
+    if (!data.session) {
+      return { error: new Error('Silakan cek email untuk verifikasi akun Anda') }
+    }
+    return { error: null }
   }
 
   const signInWithGoogle = async () => {
-    const redirectTo = process.env.NEXT_PUBLIC_REDIRECT_URL || `${window.location.origin}/auth/callback`
+    const redirectTo = `${window.location.origin}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

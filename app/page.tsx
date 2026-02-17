@@ -43,6 +43,7 @@ export default function Home() {
   const [showAuth, setShowAuth] = useState(false)
   const [currentView, setCurrentView] = useState<'chat' | 'admin'>('chat')
   const [showScrollTop, setShowScrollTop] = useState(false)
+  const [authError, setAuthError] = useState('')
   const ragSectionRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
 
@@ -54,6 +55,15 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search)
     if (params.get('auth') === 'true') {
       setShowAuth(true)
+    }
+    const error = params.get('error')
+    if (error) {
+      setAuthError(decodeURIComponent(error))
+      const timer = setTimeout(() => {
+        setAuthError('')
+        window.history.replaceState({}, '', window.location.pathname)
+      }, 5000)
+      return () => clearTimeout(timer)
     }
     window.scrollTo(0, 0)
   }, [])
@@ -81,6 +91,19 @@ export default function Home() {
 
   return (
     <div className="bg-background min-h-screen">
+      <AnimatePresence>
+        {authError && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-destructive/90 text-destructive-foreground px-6 py-3 rounded-lg shadow-lg"
+          >
+            {authError}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {showAuth && (
           <motion.div

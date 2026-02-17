@@ -5,6 +5,12 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const errorDescription = searchParams.get('error_description')
+
+  if (errorDescription) {
+    console.error('Auth error:', errorDescription)
+    return NextResponse.redirect(`${origin}?auth=true&error=${encodeURIComponent(errorDescription)}`)
+  }
 
   if (code) {
     const cookieStore = await cookies()
@@ -28,11 +34,14 @@ export async function GET(request: Request) {
     )
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      const redirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || origin
-      return NextResponse.redirect(redirectUrl)
+    
+    if (error) {
+      console.error('Supabase auth error:', error.message)
+      return NextResponse.redirect(`${origin}?auth=true&error=${encodeURIComponent(error.message)}`)
     }
+
+    return NextResponse.redirect(origin)
   }
 
-  return NextResponse.redirect(`${origin}?auth=true&error=auth_failed`)
+  return NextResponse.redirect(`${origin}?auth=true&error=no_code`)
 }
