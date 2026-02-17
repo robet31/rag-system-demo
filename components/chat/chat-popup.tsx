@@ -47,7 +47,6 @@ export function ChatPopup() {
       if (count >= MAX_FREE_CHATS) {
         setShowAuthPrompt(true)
       }
-      setMessages([])
     } else {
       setShowAuthPrompt(false)
       loadChatHistory()
@@ -64,8 +63,8 @@ export function ChatPopup() {
       
       const data = await res.json()
       
-      if (data.history && Array.isArray(data.history)) {
-        const historyMessages: Message[] = data.history.map((item: any) => [
+      if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+        const historyMessages: Message[] = data.history.reverse().map((item: any) => [
           {
             id: `user-${item.id}`,
             role: 'user' as const,

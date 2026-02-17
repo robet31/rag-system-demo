@@ -118,18 +118,18 @@ async function callOpenRouter(prompt: string): Promise<string> {
   
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 45000)
+    const timeoutId = setTimeout(() => controller.abort(), 120000)
     
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': 'https://rag-system-demo.vercel.app',
+        'HTTP-Referer': 'https://rag-systemconcept.vercel.app',
         'X-Title': 'RAG System Demo'
       },
       body: JSON.stringify({
-        model: 'openrouter/free',
+        model: 'google/gemini-2.0-flash-exp:free',
         messages: [
           {
             role: 'system',
@@ -140,7 +140,7 @@ async function callOpenRouter(prompt: string): Promise<string> {
             content: prompt
           }
         ],
-        max_tokens: 1000,
+        max_tokens: 500,
         temperature: 0.7,
       }),
       signal: controller.signal

@@ -45,7 +45,6 @@ export default function RAGInterface() {
       const count = stored ? parseInt(stored) : 0
       setChatCount(count)
       if (count >= MAX_FREE_CHATS) setLimitReached(true)
-      setMessages([])
     } else {
       setLimitReached(false)
       setChatCount(0)
@@ -63,8 +62,8 @@ export default function RAGInterface() {
       
       const data = await response.json()
       
-      if (data.history && Array.isArray(data.history)) {
-        const historyMessages: ChatMessage[] = data.history.map((item: any) => [
+      if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+        const historyMessages: ChatMessage[] = data.history.reverse().map((item: any) => [
           {
             type: 'user' as const,
             content: item.user_message,
