@@ -50,9 +50,7 @@ export default function RAGInterface() {
     }
   }, [user])
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  // Remove auto-scroll on message add
 
   const remaining = user ? null : MAX_FREE_CHATS - chatCount
 
