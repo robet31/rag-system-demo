@@ -10,6 +10,9 @@ A simple demonstration of a Retrieval-Augmented Generation (RAG) system built wi
 - **Real-time Chat**: Live conversation interface with typing indicators
 - **Context-aware Responses**: Answers based on provided knowledge base
 - **OpenRouter AI**: Uses OpenRouter API for intelligent responses
+- **User Authentication**: Google and Email login via Supabase
+- **Chat History**: Persistent chat history per user account
+- **Security**: Input validation, SQL injection protection, rate limiting
 
 ## Tech Stack
 
@@ -18,7 +21,8 @@ A simple demonstration of a Retrieval-Augmented Generation (RAG) system built wi
 - **Styling**: Tailwind CSS + Shadcn/ui
 - **Animations**: Framer Motion
 - **AI Provider**: OpenRouter API
-- **Vector Store**: Simple in-memory implementation (simulated)
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
 
 ## Getting Started
 
@@ -26,6 +30,7 @@ A simple demonstration of a Retrieval-Augmented Generation (RAG) system built wi
 
 - Node.js 18+ installed
 - OpenRouter API key (get one from [https://openrouter.ai/settings/keys](https://openrouter.ai/settings/keys))
+- Supabase account (for database and authentication)
 
 ### Installation
 
@@ -44,17 +49,27 @@ A simple demonstration of a Retrieval-Augmented Generation (RAG) system built wi
    ```bash
    cp .env.example .env.local
    ```
-   Edit `.env.local` and add your OpenRouter API key:
+   Edit `.env.local` with your credentials:
    ```
-   OPENROUTER_API_KEY=your-api-key-here
+   # Supabase Configuration
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   NEXT_PUBLIC_REDIRECT_URL=http://localhost:3000/auth/callback
+   
+   # OpenRouter API Configuration
+   OPENROUTER_API_KEY=your-openrouter-api-key
    ```
 
-4. Run the development server:
+4. Set up Supabase database:
+   - Create a new Supabase project
+   - Run the SQL in `supabase/schema.sql` in the Supabase SQL Editor
+
+5. Run the development server:
    ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Usage
 
@@ -114,15 +129,33 @@ rag-system-demo/
 
 ### OpenRouter API
 
-The demo uses the `z-ai/glm-4.5-air:free` model from OpenRouter. You can change this in `app/api/rag/route.ts`:
+The demo uses the `openrouter/free` model from OpenRouter which automatically selects a free model. You can change this in `app/api/rag/route.ts`:
 
 ```typescript
-const MODEL_NAME = 'z-ai/glm-4.5-air:free'
+const MODEL_NAME = 'openrouter/free'
 ```
 
 ### Knowledge Base
 
 The knowledge base is stored in `knowledge_base.txt`. You can modify this file to add more content or change the topic focus.
+
+### Database Schema
+
+The chat history is stored in Supabase. Run `supabase/schema.sql` to create the required tables:
+
+```sql
+-- Creates chat_history table with RLS policies
+-- Each user can only see their own chat history
+```
+
+## Security Features
+
+- **Input Validation**: All API inputs are validated for type and length
+- **SQL Injection Protection**: Using Supabase parameterized queries
+- **Row Level Security**: Database policies ensure users only access their own data
+- **API Key Protection**: Server-side only environment variables
+- **Rate Limiting**: In-memory rate limiting for API requests
+- **Authentication**: Secure session management via Supabase Auth
 
 ## Development
 

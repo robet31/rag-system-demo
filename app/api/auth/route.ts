@@ -4,8 +4,36 @@ import { NextResponse } from 'next/server'
 
 const ADMIN_EMAILS = ['admin@ragdemo.com', 'sinaubersama89@gmail.com']
 
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
 export async function POST(request: Request) {
   const { action, email, password } = await request.json()
+  
+  if (!action) {
+    return NextResponse.json({ error: 'Action is required' }, { status: 400 })
+  }
+  
+  if (action === 'signin' || action === 'signup') {
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
+    }
+    
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      return NextResponse.json({ error: 'Invalid input format' }, { status: 400 })
+    }
+    
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Invalid email format' }, { status: 400 })
+    }
+    
+    if (password.length < 6) {
+      return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 })
+    }
+  }
+  
   const cookieStore = await cookies()
 
   const supabase = createServerClient(

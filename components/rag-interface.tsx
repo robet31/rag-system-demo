@@ -9,6 +9,7 @@ import { Bot, Send, User, Lock, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 
 interface ChatMessage {
+  id?: string
   type: 'user' | 'ai'
   content: string
   timestamp: Date
@@ -44,11 +45,44 @@ export default function RAGInterface() {
       const count = stored ? parseInt(stored) : 0
       setChatCount(count)
       if (count >= MAX_FREE_CHATS) setLimitReached(true)
+      setMessages([])
     } else {
       setLimitReached(false)
       setChatCount(0)
+      loadChatHistory()
     }
   }, [user])
+
+  const loadChatHistory = async () => {
+    try {
+      const response = await fetch('/api/rag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_history' })
+      })
+      
+      const data = await response.json()
+      
+      if (data.history && Array.isArray(data.history)) {
+        const historyMessages: ChatMessage[] = data.history.map((item: any) => [
+          {
+            type: 'user' as const,
+            content: item.user_message,
+            timestamp: new Date(item.created_at)
+          },
+          {
+            type: 'ai' as const,
+            content: item.ai_message,
+            timestamp: new Date(new Date(item.created_at).getTime() + 1)
+          }
+        ]).flat()
+        
+        setMessages(historyMessages)
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error)
+    }
+  }
 
   // Remove auto-scroll on message add
 

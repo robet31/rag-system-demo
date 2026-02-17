@@ -11,6 +11,7 @@ type Message = {
   id: string
   role: 'user' | 'assistant'
   content: string
+  timestamp?: Date
 }
 
 const MAX_FREE_CHATS = 2
@@ -46,10 +47,45 @@ export function ChatPopup() {
       if (count >= MAX_FREE_CHATS) {
         setShowAuthPrompt(true)
       }
+      setMessages([])
     } else {
       setShowAuthPrompt(false)
+      loadChatHistory()
     }
   }, [user])
+
+  const loadChatHistory = async () => {
+    try {
+      const res = await fetch('/api/rag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_history' })
+      })
+      
+      const data = await res.json()
+      
+      if (data.history && Array.isArray(data.history)) {
+        const historyMessages: Message[] = data.history.map((item: any) => [
+          {
+            id: `user-${item.id}`,
+            role: 'user' as const,
+            content: item.user_message,
+            timestamp: new Date(item.created_at)
+          },
+          {
+            id: `ai-${item.id}`,
+            role: 'assistant' as const,
+            content: item.ai_message,
+            timestamp: new Date(new Date(item.created_at).getTime() + 1)
+          }
+        ]).flat()
+        
+        setMessages(historyMessages)
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error)
+    }
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

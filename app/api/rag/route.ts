@@ -40,9 +40,50 @@ async function getUserFromCookies() {
   }
 }
 
+async function saveChatHistory(userId: string, userMessage: string, aiMessage: string, context: string) {
+  try {
+    const { error } = await supabase
+      .from('chat_history')
+      .insert({
+        user_id: userId,
+        user_message: userMessage,
+        ai_message: aiMessage,
+        context_used: context,
+        created_at: new Date().toISOString()
+      })
+
+    if (error) {
+      console.log('Error saving chat history:', error.message)
+    }
+  } catch (error) {
+    console.log('Error saving chat history:', error)
+  }
+}
+
+async function getChatHistory(userId: string, limit: number = 50) {
+  try {
+    const { data, error } = await supabase
+      .from('chat_history')
+      .select('id, user_message, ai_message, context_used, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      console.log('Error getting chat history:', error.message)
+      return []
+    }
+
+    return data || []
+  } catch (error) {
+    console.log('Error getting chat history:', error)
+    return []
+  }
+}
+
 async function callOpenRouter(prompt: string): Promise<string> {
   if (!OPENROUTER_API_KEY) {
-    return 'Error: OPENROUTER_API_KEY tidak ditemukan.'
+    return 'Error: Konfigurasi API belum lengkap. Silakan hubungi administrator.'
   }
   
   const cacheKey = prompt.trim().toLowerCase()
@@ -110,6 +151,10 @@ async function callOpenRouter(prompt: string): Promise<string> {
     
     if (data.error) {
       console.log('OpenRouter error:', data.error.message)
+      const errorMsg = data.error.message.toLowerCase()
+      if (errorMsg.includes('user not found') || errorMsg.includes('invalid api key')) {
+        return 'Maaf, terjadi kesalahan pada sistem AI. Silakan coba lagi nanti atau hubungi administrator.'
+      }
       return `Maaf, terjadi kesalahan: ${data.error.message}`
     }
     
@@ -252,6 +297,10 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { action, query, context, fileContent } = body
     
+    if (!action) {
+      return Response.json({ error: 'Action is required' }, { status: 400 })
+    }
+    
     const user = await getUserFromCookies()
     const isAdmin = user?.email ? ADMIN_EMAILS.includes(user.email) : false
 
@@ -265,6 +314,14 @@ export async function POST(request: Request) {
       }
       
       const content = context || fileContent
+      if (typeof content !== 'string') {
+        return Response.json({ error: 'Invalid content format' }, { status: 400 })
+      }
+      
+      if (content.length > 100000) {
+        return Response.json({ error: 'Content too large. Maximum 100KB allowed.' }, { status: 400 })
+      }
+      
       const chunks = chunkText(content, 500)
       const success = await saveDocuments(chunks, 'admin_upload')
       
@@ -283,8 +340,8 @@ export async function POST(request: Request) {
       }
       
       const { id } = body
-      if (!id) {
-        return Response.json({ error: 'Document ID required' }, { status: 400 })
+      if (!id || typeof id !== 'number') {
+        return Response.json({ error: 'Valid document ID required' }, { status: 400 })
       }
       
       const { error } = await supabase
@@ -304,13 +361,26 @@ export async function POST(request: Request) {
       return Response.json({ documents })
     }
 
+    if (action === 'get_history') {
+      if (!user) {
+        return Response.json({ error: 'Unauthorized. Please login to view chat history.' }, { status: 401 })
+      }
+      
+      const history = await getChatHistory(user.id)
+      return Response.json({ history })
+    }
+
     if (action === 'chat') {
-      if (!query) {
-        return Response.json({ error: 'Query required' }, { status: 400 })
+      if (!query || typeof query !== 'string') {
+        return Response.json({ error: 'Valid query required' }, { status: 400 })
+      }
+
+      if (query.length > 2000) {
+        return Response.json({ error: 'Query too long. Maximum 2000 characters allowed.' }, { status: 400 })
       }
 
       const relevantDocs = await similaritySearch(query, 3)
-      const context = relevantDocs.join('\n\n')
+      const contextStr = relevantDocs.join('\n\n')
       const enhancedPrompt = `Kamu adalah asisten RAG (Retrieval-Augmented Generation) demo. Tugasmu HANYA menjawab pertanyaan berdasarkan konteks yang diberikan di bawah ini.
 
 ATURAN KETAT:
@@ -321,11 +391,15 @@ ATURAN KETAT:
 4. Jika konteks relevan ditemukan, jawab berdasarkan konteks tersebut.
 
 KONTEKS DARI KNOWLEDGE BASE:
-${context}
+${contextStr}
 
 PERTANYAAN USER: ${query}`
 
       const answer = await callOpenRouter(enhancedPrompt)
+
+      if (user) {
+        await saveChatHistory(user.id, query, answer, relevantDocs[0] || '')
+      }
 
       return Response.json({
         answer,
