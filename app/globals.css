@@ -2,51 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
-  }
+:root {
+  --background: #0c0f14;
+  --foreground: #e8ecf4;
+  --card: #141821;
+  --card-foreground: #e8ecf4;
+  --popover: #141821;
+  --popover-foreground: #e8ecf4;
+  --primary: #6ee7a0;
+  --primary-foreground: #0c0f14;
+  --secondary: #1e2736;
+  --secondary-foreground: #e8ecf4;
+  --muted: #1a1f2b;
+  --muted-foreground: #7b8ba3;
+  --accent: #818cf8;
+  --accent-foreground: #e8ecf4;
+  --destructive: #f87171;
+  --destructive-foreground: #0c0f14;
+  --border: #232b3a;
+  --input: #1a2030;
+  --ring: #6ee7a0;
+  --chart-1: #6ee7a0;
+  --chart-2: #818cf8;
+  --chart-3: #f9c74f;
+  --chart-4: #f472b6;
+  --chart-5: #67e8f9;
+  --sidebar: #0a0d11;
+  --sidebar-foreground: #e8ecf4;
+  --sidebar-primary: #6ee7a0;
+  --sidebar-primary-foreground: #0c0f14;
+  --sidebar-accent: #1e2736;
+  --sidebar-accent-foreground: #818cf8;
+  --sidebar-border: #232b3a;
+  --sidebar-ring: #6ee7a0;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Space Grotesk', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --radius: 0.625rem;
 }
 
 @layer base {
@@ -54,6 +46,29 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+}
+
+[data-us-project] a[href*="unicorn.studio"],
+[data-us-project] a[href*="unicorn"],
+a[href*="unicorn.studio"],
+div[data-us-project] > a,
+[data-us-project] ~ a,
+[data-us-project] + a {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  z-index: -9999 !important;
 }
