@@ -55,6 +55,7 @@ export default function Home() {
     if (params.get('auth') === 'true') {
       setShowAuth(true)
     }
+    window.scrollTo(0, 0)
   }, [])
 
   useEffect(() => {
