@@ -177,8 +177,8 @@ export default function Home() {
             <div className="absolute inset-0 z-0">
               <UnicornAnimation height="100%" projectId="62M9dcB4C0nf8eYoVHME" />
             </div>
-            <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0c0f14] via-[#0c0f14]/90 to-[#0c0f14]" />
-            <div className="absolute inset-0 z-[2] bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+            <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0c0f14]/90 via-[#0c0f14]/70 to-[#0c0f14]/90" />
+            <div className="absolute inset-0 z-[2] bg-gradient-to-r from-black/30 via-transparent to-black/30" />
             <div className="relative z-10 min-h-[calc(100vh-4rem)] flex items-center justify-center">
               <div className="max-w-4xl mx-auto px-6 py-20">
                 <div className="text-center">
@@ -270,6 +270,16 @@ export default function Home() {
             </div>
           </section>
 
+          <motion.section 
+            className="h-32 relative z-10"
+            style={{ backdropFilter: 'blur(20px)' }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background/80" />
+          </motion.section>
+
           <section className="py-28 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/10 to-background" />
             <div className="relative max-w-6xl mx-auto px-6">
@@ -327,6 +337,16 @@ export default function Home() {
             </div>
           </section>
 
+          <motion.section 
+            className="h-24 relative z-10"
+            style={{ backdropFilter: 'blur(15px)' }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80" />
+          </motion.section>
+
           <section ref={ragSectionRef} className="py-28 relative">
             <div className="max-w-5xl mx-auto px-6">
               <motion.div
@@ -359,6 +379,16 @@ export default function Home() {
               </motion.div>
             </div>
           </section>
+
+          <motion.section 
+            className="h-20 relative z-10"
+            style={{ backdropFilter: 'blur(10px)' }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-transparent" />
+          </motion.section>
 
           <section className="relative">
             <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-background to-transparent z-10" />
