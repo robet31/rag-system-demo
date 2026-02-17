@@ -129,7 +129,7 @@ async function callOpenRouter(prompt: string): Promise<string> {
         'X-Title': 'RAG System Demo'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'openrouter/free',
         messages: [
           {
             role: 'system',
