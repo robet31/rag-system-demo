@@ -2,15 +2,9 @@
 
 A simple demonstration of a Retrieval-Augmented Generation (RAG) system built with Next.js, Shadcn/ui, Framer Motion, and OpenRouter API.
 
-## 📸 Homepage Preview
+## 📸 Demo Preview
 
-![RAG System Homepage](Dokumentasi%20Homepage%20web.jpg)
-
-## 🎥 Demo Video
-
-Watch the demonstration video to see RAG System in action:
-
-[RAG System Demo Video](RAG-System-Demo.mp4)
+![RAG System Demo](RAG-System-Demo.gif)
 
 ---
 
