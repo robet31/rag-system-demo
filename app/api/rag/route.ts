@@ -40,9 +40,26 @@ async function getUserFromCookies() {
   }
 }
 
+async function getServerClient() {
+  const cookieStore = await cookies()
+  return createServerClient(
+    supabaseUrl,
+    supabaseKey,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll() {},
+      },
+    }
+  )
+}
+
 async function saveChatHistory(userId: string, userMessage: string, aiMessage: string, context: string) {
   try {
-    const { error } = await supabase
+    const serverSupabase = await getServerClient()
+    const { error } = await serverSupabase
       .from('chat_history')
       .insert({
         user_id: userId,
@@ -62,7 +79,8 @@ async function saveChatHistory(userId: string, userMessage: string, aiMessage: s
 
 async function getChatHistory(userId: string, limit: number = 50) {
   try {
-    const { data, error } = await supabase
+    const serverSupabase = await getServerClient()
+    const { data, error } = await serverSupabase
       .from('chat_history')
       .select('id, user_message, ai_message, context_used, created_at')
       .eq('user_id', userId)
