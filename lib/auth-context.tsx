@@ -16,7 +16,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const ADMIN_EMAILS = ['admin@ragdemo.com', 'sinaubersama89@gmail.com']
+const ADMIN_EMAILS = ['sopoh006@gmail.com']
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
