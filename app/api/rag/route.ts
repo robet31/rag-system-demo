@@ -134,6 +134,13 @@ async function callOpenRouter(prompt: string): Promise<string> {
   requestCount.count++
   dailyCount.count++
   
+  const FREE_MODELS = [
+    'liquid/lfm-2.5-1.2b-thinking:free',
+    'stepfun/step-3.5-flash:free',
+    'arcee-ai/trinity-mini:free'
+  ]
+  const selectedModel = FREE_MODELS[Math.floor(Math.random() * FREE_MODELS.length)]
+  
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 120000)
@@ -147,7 +154,7 @@ async function callOpenRouter(prompt: string): Promise<string> {
         'X-Title': 'RAG System Demo'
       },
       body: JSON.stringify({
-        model: 'openrouter/free',
+        model: selectedModel,
         messages: [
           {
             role: 'system',
@@ -380,12 +387,20 @@ export async function POST(request: Request) {
     }
 
     if (action === 'get_history') {
+      const debugInfo: any = { requested: true }
+      
       if (!user) {
-        return Response.json({ error: 'Unauthorized. Please login to view chat history.' }, { status: 401 })
+        debugInfo.userFound = false
+        return Response.json({ error: 'Unauthorized. Please login to view chat history.', debugInfo }, { status: 401 })
       }
       
+      debugInfo.userFound = true
+      debugInfo.userId = user.id
+      
       const history = await getChatHistory(user.id)
-      return Response.json({ history })
+      debugInfo.historyCount = history.length
+      
+      return Response.json({ history, debugInfo })
     }
 
     if (action === 'chat') {
