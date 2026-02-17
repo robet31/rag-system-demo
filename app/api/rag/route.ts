@@ -7,6 +7,7 @@ import { createServerClient } from '@supabase/ssr'
 const ADMIN_EMAILS = ['admin@ragdemo.com', 'sinaubersama89@gmail.com']
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const CACHE = new Map<string, { answer: string; timestamp: number }>()
 const CACHE_TTL = 5 * 60 * 1000
 const REQUEST_COUNTS = new Map<string, { count: number; resetTime: number }>()
@@ -16,6 +17,18 @@ const RATE_LIMIT_PER_DAY = 45
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 const supabase = createClient(supabaseUrl, supabaseKey)
+
+function getServiceClient() {
+  if (!SUPABASE_SERVICE_ROLE_KEY) {
+    return supabase
+  }
+  return createClient(supabaseUrl, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
+}
 
 async function getUserFromCookies() {
   try {
@@ -58,8 +71,8 @@ async function getServerClient() {
 
 async function saveChatHistory(userId: string, userMessage: string, aiMessage: string, context: string) {
   try {
-    const serverSupabase = await getServerClient()
-    const { error } = await serverSupabase
+    const serviceClient = getServiceClient()
+    const { error } = await serviceClient
       .from('chat_history')
       .insert({
         user_id: userId,
@@ -79,8 +92,8 @@ async function saveChatHistory(userId: string, userMessage: string, aiMessage: s
 
 async function getChatHistory(userId: string, limit: number = 50) {
   try {
-    const serverSupabase = await getServerClient()
-    const { data, error } = await serverSupabase
+    const serviceClient = getServiceClient()
+    const { data, error } = await serviceClient
       .from('chat_history')
       .select('id, user_message, ai_message, context_used, created_at')
       .eq('user_id', userId)

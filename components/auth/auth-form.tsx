@@ -103,19 +103,25 @@ export function AuthForm({ onClose }: { onClose?: () => void }) {
 
           <form onSubmit={handleSubmit} className="space-y-3">
             <Input
+              id="email"
+              name="email"
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
               className="bg-black border-border/50 text-white placeholder:text-gray-400"
             />
             <Input
+              id="password"
+              name="password"
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
               className="bg-black border-border/50 text-white placeholder:text-gray-400"
             />
             {error && (
