@@ -1,5 +1,9 @@
 # RAG System Demo
 
+🚀 **Live Demo**: [https://ragsystemconcept.vercel.app/](https://ragsystemconcept.vercel.app/)
+
+---
+
 A simple demonstration of a Retrieval-Augmented Generation (RAG) system built with Next.js, Shadcn/ui, Framer Motion, and OpenRouter API.
 
 ## 📸 Demo Preview
