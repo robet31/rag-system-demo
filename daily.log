@@ -1,1 +1,1 @@
-test: add unit test for edge case - 2026-08-13
+fix: sanitize input to prevent injection - 2026-08-14
