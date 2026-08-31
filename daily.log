@@ -1,1 +1,1 @@
-fix: prevent crash on malformed request - 2026-08-30
+refactor: simplify nested conditional - 2026-08-31
